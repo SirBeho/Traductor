@@ -7,6 +7,7 @@
     <style>
         * {
             font-family: "Consolas";
+            box-sizing: border-box;
         }
 
         body {
@@ -24,7 +25,7 @@
         }
 
         .container {
-            max-width: 600px;
+            max-width: 900px;
             margin: 0 auto;
             padding: 20px;
             background-color: #fff;
@@ -37,6 +38,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            gap: 5px;
         }
 
         input[type="text"] {
@@ -70,45 +72,49 @@
             border-radius: .5rem;
 
         }
+
+        div{
+            width: 100%;
+
+        }
+        textarea{
+           padding: 10px; 
+           width: 100%; 
+            border: 1px solid #ccc; 
+            border-radius: 3px;
+            
+        }
     </style>
 </head>
 
 <body>
     <header>
         <h1 style="font-size: 24px;">Analizador</h1>
-    </header> 
+    </header>
     <div class="container">
-        <form method="POST">
+        <form >
             <div>
                 <h4>Codigo en C</h4>
-                <textarea name="texto" id="texto" cols="30" rows="5" placeholder="Ingrese el codigo" style="padding: 10px; width: 70%; border: 1px solid #ccc; border-radius: 3px; margin-right: 10px;"></textarea>
+                <textarea name="textoC" id="textoC" rows="15" placeholder="Ingrese el código" ></textarea>
             </div>
 
             <div>
                 <h4>Codigo en Java</h4>
-                <textarea disabled name="texto" id="texto" cols="30" rows="5" placeholder="Ingrese el codigo" style="padding: 10px; width: 70%; border: 1px solid #ccc; border-radius: 3px; margin-right: 10px;"></textarea>
+                <textarea name="textoJava" id="textoJava"  rows="15" placeholder="Resultado en Java"  disabled></textarea>
             </div>
-  
-        </div>
-           
         </form>
-
-   
-      
     </div>
 
     <script>
-        const textoInput = document.getElementById('texto');
+        const textoCInput = document.getElementById('textoC');
+        const textoJavaInput = document.getElementById('textoJava');
 
-        textoInput.addEventListener('input', () => {
-            const texto = textoInput.value.replace(/\n/g, ' ');
-            actualizarResultado(texto);
-            console.log("hola")
-        });
+        textoCInput.addEventListener('input', () => {
+            const texto = textoCInput.value;
 
-        function actualizarResultado(texto) {
-         
-            fetch('analizar.php', {
+
+
+            fetch('traductor.php', {
                     method: 'POST',
                     body: new URLSearchParams({
                         texto
@@ -120,31 +126,13 @@
                 .then(response => response.text())
                 .then(resultados => {
                     console.log(resultados)
-                    resultados = JSON.parse(resultados);
-                    resultadoDiv.innerHTML = "Analisis Lexico";
-                 
-                    msj.innerHTML = "Analisis Sintactico";
-                    if (lexCheckbox.checked) {
-                        resultadoDiv.innerHTML = 'Valor&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Token <br>';
-                        resultadoDiv.innerHTML += resultados.tokens.replace(/\n/g, '<br>').replace(/ /g, '&nbsp;')
-                    }
-
-                    if (sinCheckbox.checked) {
-                        msj.innerHTML = resultados.msj.replace(/\n/g, '<br>').replace(/ /g, '&nbsp;')
-                        if (resultados.msj.includes("syntax error")) {
-                            msj.style.color = 'red';
-                        } else {
-                            msj.style.color = '';
-                        }
-                    }
-
-
-
+                    textoJavaInput.value = resultados;
                 })
                 .catch(error => {
                     console.error('Error en la solicitud AJAX:', error);
                 });
-        }
+    
+        });
     </script>
 </body>
 
